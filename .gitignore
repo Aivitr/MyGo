@@ -51,3 +51,4 @@ config.local.json
 # 示例：本地配置文件
 secret.key        
 # 示例：敏感密钥文件
+.gitignore
