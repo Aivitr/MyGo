@@ -60,7 +60,9 @@ func main() {
     s := arr[3:5]  //此时cap(s)=len(s)，已达容量上限
 
     appendAndChangeButExpand(s)//本次扩容导致切片副本指针指向新的匿名数组
+
     /*(我查到可以调用unsafe包来查看这个数组，但是AI告诉我unsafe指针真的非常的unsafe，非必要别这么干，那这里我就不展示了awa)*/
+    
     fmt.Println(s) //   [4 5]（切片元素完全没变)
     fmt.Println(arr)//  [1,2,3,4,5]（原本的底层数组也没变）
 }
