@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"unicode/utf8"
 )
 
 //尝试修改切片元素
@@ -34,5 +35,21 @@ func main() {
     fmt.Println(s2) //   [4 5]（切片元素完全没变)
     fmt.Println(arr2)//  [1,2,3,4,5]（原本的底层数组也没变） 
 
+    str1, str2 := "hello  world", "the"
+	inserstr := InsertStringSlice(str1,str2,6)
+	fmt.Println(inserstr)
+
+	str3 := "你好,Golang"
+	fmt.Println(len(str3),utf8.RuneCountInString(str3))
+
+
+}
+
+func InsertStringSlice(s1 string, s2 string, pos int)(string){
+	if pos < 0 {pos = 0}
+
+	if pos > len(s1) {pos = len(s1)}
+
+	return s1[:pos] + s2 + s1[pos:]
 }
 
