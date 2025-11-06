@@ -7,11 +7,6 @@ import (
 
 const QUEUE_SIZE = 8
 
-type ParseResult struct {
-	CurrentQueue string   // 当前输入队列
-	Output       []string // 输出技能
-}
-
 // 技能列表
 var skillPatterns = map[string]string{
 	"SDJ":   "波动拳",
@@ -31,7 +26,7 @@ func main() {
 
 	//裁取后八位
 	var cut string
-	if len(tempcmd) > 8 {
+	if len(tempcmd) > QUEUE_SIZE {
 		cut = tempcmd[len(tempcmd)-9:]
 	} else {
 		cut = tempcmd
