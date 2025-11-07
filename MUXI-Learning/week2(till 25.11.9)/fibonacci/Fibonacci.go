@@ -77,12 +77,12 @@ func fibFormulaFast(n int) int64 {
 	if n < 0 {
 		panic("n 不能为负数")
 	}
-	var fastDoubling func(int) (int64, int64)
-	fastDoubling = func(k int) (int64, int64) {
+	var fast func(int) (int64, int64)
+	fast = func(k int) (int64, int64) {
 		if k == 0 {
 			return 0, 1
 		}
-		a, b := fastDoubling(k / 2)
+		a, b := fast(k / 2)
 		c := a * (2*b - a)
 		d := a*a + b*b
 		if k%2 == 0 {
@@ -90,6 +90,6 @@ func fibFormulaFast(n int) int64 {
 		}
 		return d, c + d
 	}
-	res, _ := fastDoubling(n)
+	res, _ := fast(n)
 	return res
 }
