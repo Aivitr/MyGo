@@ -1,7 +1,7 @@
 # 原因分析与解决方案
 ## 一、两处切片越界与并发问题
 ### 1. 闭包延迟绑定导致切片越界
-这是最主要的原因！程序中异步启动的 `goroutine` 里闭包的变量声明较慢，导致切片越界：
+程序中异步启动的 `goroutine` 里闭包的变量声明较慢，导致切片越界：
 - 当 `len(consumeMSG) >= ConsumeNum` 时，主 `goroutine` 启动 `go func() { m := consumeMSG[:ConsumeNum]; fn(m) }()`；
 - 但 `goroutine` 启动后不会立刻执行，主 `goroutine` 会继续往下走，执行到 `consumeMSG = consumeMSG[ConsumeNum:]`
 - 等异步 `goroutine` 真正执行时，`consumeMSG` 可能已经长度较钝，甚至是空切片了，这时候执行 `consumeMSG[:ConsumeNum]`，就会触发 **切片越界 Panic**（`runtime error: slice bounds out of range`）。
