@@ -3,8 +3,6 @@ package main
 import (
 	"fmt"
 	"math/rand"
-	"sort"
-	"sync"
 	"time"
 )
 
@@ -15,34 +13,51 @@ type Data struct {
 
 func main() {
 	chData := make(chan Data, 20)
-	Datas := make([]Data, 20)
-	var wg sync.WaitGroup
+	done := make(chan bool)
 
 	newRoutine := func(idx int) {
 		randomNum := 1 + rand.Intn(1000)
 		time.Sleep(time.Duration(randomNum) * time.Millisecond)
 		chData <- Data{randomNum, idx}
-		wg.Done()
+		done <- true
 	}
 
 	for i := 1; i <= 20; i++ {
-		wg.Add(1)
 		go newRoutine(i)
 	}
 
-	for i := 0; i < 20; i++ {
-		Datas[i] = <-chData
+	for i := 1; i <= 20; i++ {
+		<-done
+	}
+	close(done)
+
+	fmt.Println("按生成顺序输出")
+
+	cnt := 0
+	for v := range chData {
+		if cnt == 20 {break}
+		cnt++
+
+		fmt.Println(v.randNum, "with id :", v.ID)
+		chData <- v
 	}
 
-	fmt.Println("未排序的数据为:")
-	for i := range Datas {
-		fmt.Printf("%d (with id :%d)\n", Datas[i].randNum, Datas[i].ID)
-	}
-
-	sort.Slice(Datas, func(i, j int) bool { return Datas[i].ID < Datas[j].ID })
-
-	fmt.Println("按生成顺序排序后：")
-	for i := range Datas {
-		fmt.Printf("%d (with id :%d)\n", Datas[i].randNum, Datas[i].ID)
+	fmt.Println("按id输出")
+	for i := 1; i <= 20; i++ {
+		remain := 20 - i
+		found := false 
+		
+		for j := 0; j <= remain && !found; j++ {
+			select {
+			case v := <-chData:
+				if v.ID == i {
+					fmt.Println(v.randNum, "with id :", v.ID)
+					found = true 
+				} else {
+					chData <- v 
+				}
+			}
+		}
+		
 	}
 }
